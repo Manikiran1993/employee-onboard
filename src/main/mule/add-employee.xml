@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="cbc9dbf3-f026-4f81-8212-a33c27d5317b" >
+		<db:oracle-connection host="localhost" user="c##scott" password="tiger1" instance="orcle" />
+	</db:config>
+	<flow name="add-employeeFlow" doc:id="da68559b-69d5-433e-a090-f1b39f6832ab" >
+		<logger level="INFO" doc:name="Logger" doc:id="165aa6ac-639d-44e0-b4ba-672e4b1ede26" message="#[payload]"/>
+		<foreach doc:name="For Each" doc:id="45e3fbf1-8e6e-4773-9ea4-896e5b4098bc" >
+			<db:insert doc:id="cee1cbd6-e110-4ab2-9fae-27075ecf1dd6" config-ref="Database_Config">
+			<db:sql>insert into employee (empno,empname,age) values (:empno,:empname,:age)</db:sql>
+			<db:input-parameters><![CDATA[#[{
+"empno": payload.EMPNO,
+"empname": payload.EMPNAME,
+"age": payload.AGE
+}]]]></db:input-parameters>
+		</db:insert>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="eb868428-ff57-49b1-ba07-df07f8cebb4d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": 200,
+	"Message": "Inserted successfully"
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

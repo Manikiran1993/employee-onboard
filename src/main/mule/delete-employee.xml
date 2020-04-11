@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="delete-employeeFlow" doc:id="51bc4869-9538-43b4-b1f4-c20d35e38ae7" >
+		<db:delete doc:name="Delete" doc:id="4db98822-3816-474a-b868-f45a72327d1e" config-ref="Database_Config">
+			<db:sql >delete from employee where empno =:empid</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+   'empid' : attributes.uriParams.'empid'
+}]]]></db:input-parameters>
+		</db:delete>
+		<logger level="INFO" doc:name="Logger" doc:id="4d387b13-5077-4e86-b79b-48b95abc8f8e" message="deleted successfully"/>
+		<ee:transform doc:name="Transform Message" doc:id="acd6e630-688d-4d21-97f2-1eb7f4ec753c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": 200,
+	"Message": "deleted successfully"
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

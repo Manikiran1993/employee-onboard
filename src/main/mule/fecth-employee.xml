@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="fecth-employeeFlow" doc:id="cdfceafc-3eda-43bc-9882-33348e471a56" >
+		<logger level="INFO" doc:name="Logger" doc:id="bbc989b7-3a1e-43a0-bdca-8c5f40960f42" />
+		<db:select doc:name="Select" doc:id="a54a1043-d241-482a-9427-a45a06aedbf8" config-ref="Database_Config">
+			<db:sql >select * from employee where empno =:empno</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+   'empno' : attributes.queryParams.'empid'
+}]]]></db:input-parameters>
+		</db:select>
+		<logger level="INFO" doc:name="Logger" doc:id="b926a6e7-6055-4721-88e6-bbe932f30c04" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="76d8b0ae-58ed-4ef7-99da-3f1ce1b53d9b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
